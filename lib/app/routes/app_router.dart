@@ -8,10 +8,9 @@ class AppRouter {
     initialLocation: '/',
     routes: [
       GoRoute(
-        name:
-            'signin', 
+        name: 'signin',
         path: '/',
-        builder: (context, state) => const SignInScreen(),
+        builder: (context, state) => SignInScreen(),
       ),
       GoRoute(
         name: 'signup',
