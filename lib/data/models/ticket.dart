@@ -20,8 +20,7 @@ class Ticket {
     return Ticket(
       clientName: map['clientName'],
       address: map['address'],
-      ticketDate: DateTime.parse(
-          map['ticketDate']), // Convertir la cadena ISO 8601 a DateTime
+      ticketDate: DateTime.parse(map['ticketDate']),
     );
   }
 }

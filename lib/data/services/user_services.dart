@@ -1,5 +1,5 @@
 abstract class UserServices {
-  bool signIn(String username, String password);
-  void signUp(String username, String password);
-  bool checkUserAccount();
+  Future<bool> signIn(String username, String password);
+  Future<void> signUp(String username, String password);
+  Future<bool> checkUserAccount(String username);
 }

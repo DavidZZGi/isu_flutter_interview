@@ -34,7 +34,8 @@ class DatabaseHelper {
   Future<int> insertRecord(
       Map<String, dynamic> record, String tableName) async {
     Database db = await database;
-    return await db.insert(tableName, record);
+    return await db.insert(tableName, record,
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Map<String, dynamic>>> getDataFromTable(String tableName) async {

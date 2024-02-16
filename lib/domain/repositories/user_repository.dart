@@ -1,24 +1,28 @@
 import 'package:isu_flutter_interview/data/local_db/database_helper.dart';
+import 'package:isu_flutter_interview/data/models/user.dart';
 import 'package:isu_flutter_interview/data/services/user_services.dart';
 
 class UserRepository implements UserServices {
   final DatabaseHelper databaseHelper;
+  final String userTable = 'user';
   UserRepository(this.databaseHelper);
 
   @override
-  bool checkUserAccount() {
-    // TODO: implement checkUserAccount
-    throw UnimplementedError();
+  Future<bool> checkUserAccount(String username) async {
+    final users = await databaseHelper.getDataFromTable(userTable);
+    return users.any((user) => user['username'] == username);
   }
 
   @override
-  bool signIn(String email, String password) {
-    // TODO: implement signIn
-    throw UnimplementedError();
+  Future<bool> signIn(String username, String password) async {
+    final users = await databaseHelper.getDataFromTable(userTable);
+    return users.any(
+        (user) => user['username'] == username && user['password'] == password);
   }
 
   @override
-  void signUp(String email, String password) {
-    // TODO: implement signUp
+  Future<void> signUp(String username, String password) async {
+    await databaseHelper.insertRecord(
+        User(username: username, password: password).toMap(), userTable);
   }
 }
