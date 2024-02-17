@@ -2,7 +2,7 @@ import 'package:isu_flutter_interview/data/local_db/database_helper.dart';
 import 'package:isu_flutter_interview/data/models/ticket.dart';
 import 'package:isu_flutter_interview/data/services/ticket_services.dart';
 
-class TicketRepository implements TicketService {
+class TicketRepository implements ITicketService {
   final DatabaseHelper databaseHelper;
   TicketRepository(this.databaseHelper);
 

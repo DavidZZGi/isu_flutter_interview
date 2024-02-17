@@ -2,13 +2,37 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_in_bloc/bloc/sign_in_bloc.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../widgets/flutter_icon.dart';
 
-class SignInScreen extends StatelessWidget {
-  SignInScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+  bool _isButtonDisabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateButtonState);
+    _passwordController.addListener(_updateButtonState);
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      _isButtonDisabled =
+          _emailController.text.isEmpty || _passwordController.text.isEmpty;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,17 +44,73 @@ class SignInScreen extends StatelessWidget {
       body: BlocListener<SignInBloc, SignInState>(
         listener: (context, state) {
           if (state.signInStatus == SignInStatus.error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Incorrect credentials')));
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: const Text('Invalid Credentials'),
+              description: RichText(
+                  text: const TextSpan(
+                      text: 'Your username or password are wrong')),
+              alignment: Alignment.topRight,
+              direction: TextDirection.ltr,
+              animationDuration: const Duration(milliseconds: 300),
+              animationBuilder: (context, animation, alignment, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            );
             _emailController.clear();
             _passwordController.clear();
           }
           if (state.signInStatus == SignInStatus.success) {
-            Navigator.pushReplacementNamed(context, '/home');
+            Future.delayed(const Duration(seconds: 3), () {
+              toastification.show(
+                context: context,
+                type: ToastificationType.success,
+                style: ToastificationStyle.flat,
+                autoCloseDuration: const Duration(seconds: 2),
+                title: const Text('Correct Credentials'),
+                description: RichText(
+                    text: const TextSpan(
+                        text: 'Your username and password are correct')),
+                alignment: Alignment.topRight,
+                direction: TextDirection.ltr,
+                animationDuration: const Duration(milliseconds: 300),
+                animationBuilder: (context, animation, alignment, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+              );
+            });
+
+            //    Navigator.pushReplacementNamed(context, '/home');
           }
           if (state.signInStatus == SignInStatus.newUserError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Please sign up first')));
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: const Text('You are not registered'),
+              description: RichText(
+                  text: const TextSpan(
+                      text: 'Please sign up if you do not have an account')),
+              alignment: Alignment.topRight,
+              direction: TextDirection.ltr,
+              animationDuration: const Duration(milliseconds: 300),
+              animationBuilder: (context, animation, alignment, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            );
             _emailController.clear();
             _passwordController.clear();
           }
@@ -82,16 +162,17 @@ class SignInScreen extends StatelessWidget {
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: const BorderSide(color: Colors.blue),
                         )),
-                    onPressed: () {
-                      /*   context.read<SignInBloc>().add(OnSignIn(
+                    onPressed: _isButtonDisabled
+                        ? null
+                        : () {
+                            /*   context.read<SignInBloc>().add(OnSignIn(
                           params: Params(
                               email: _emailController.text,
                               password: _passwordController.text)));*/
-                    },
+                          },
                     child: const Text(
-                      'Sign In',
+                      'Login',
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),

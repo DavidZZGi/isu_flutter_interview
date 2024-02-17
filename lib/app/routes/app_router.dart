@@ -10,7 +10,7 @@ class AppRouter {
       GoRoute(
         name: 'signin',
         path: '/',
-        builder: (context, state) => SignInScreen(),
+        builder: (context, state) => const SignInScreen(),
       ),
       GoRoute(
         name: 'signup',
@@ -20,7 +20,7 @@ class AppRouter {
       GoRoute(
         name: 'dashboard',
         path: '/dashboard',
-        builder: (context, state) => const DashboardScreen(),
+        builder: (context, state) => DashboardScreen(),
       ),
       GoRoute(
         name: 'workticket',

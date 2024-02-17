@@ -2,7 +2,7 @@ import 'package:isu_flutter_interview/data/local_db/database_helper.dart';
 import 'package:isu_flutter_interview/data/models/user.dart';
 import 'package:isu_flutter_interview/data/services/user_services.dart';
 
-class UserRepository implements UserServices {
+class UserRepository implements IUserServices {
   final DatabaseHelper databaseHelper;
   final String userTable = 'user';
   UserRepository(this.databaseHelper);

@@ -7,11 +7,11 @@ class DatabaseHelper {
   Future<Database> get database async {
     // ignore: unnecessary_null_comparison
     if (_database != null) return _database;
-    _database = await _initDatabase();
+    _database = await initDatabase();
     return _database;
   }
 
-  Future<Database> _initDatabase() async {
+  Future<Database> initDatabase() async {
     String path = join(await getDatabasesPath(), 'test.db');
     return await openDatabase(
       path,
