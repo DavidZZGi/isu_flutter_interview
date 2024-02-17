@@ -4,26 +4,51 @@ import 'package:isu_flutter_interview/data/services/ticket_services.dart';
 
 class TicketRepository implements ITicketService {
   final DatabaseHelper databaseHelper;
+  final String _ticketTable = 'ticket';
   TicketRepository(this.databaseHelper);
 
   @override
-  void addTicket(Ticket ticket) {
-    // TODO: implement addTicket
+  Future<bool> addTicket(Ticket ticket) async {
+    final result =
+        await databaseHelper.insertRecord(ticket.toMap(), _ticketTable);
+    if (result == 0) {
+      return false;
+    }
+    return true;
   }
 
   @override
-  void deleteTicket(int ticketPos) {
-    // TODO: implement deleteTicket
+  Future<bool> deleteTicket(int ticketPos) async {
+    final result =
+        await databaseHelper.deleteRecordInTable(ticketPos, _ticketTable);
+    if (result == 0) {
+      return false;
+    }
+    return true;
   }
 
   @override
-  Future<List<Ticket>> getTickets() {
-    // TODO: implement getTickets
-    throw UnimplementedError();
+  Future<List<Ticket>> getTickets() async {
+    final result = await databaseHelper.getDataFromTable(_ticketTable);
+
+    return [
+      for (final {
+            'clientName': clientName,
+            'address': address,
+            'ticketDate': ticketDate,
+          } in result)
+        Ticket(
+            clientName: clientName, address: address, ticketDate: ticketDate),
+    ];
   }
 
   @override
-  void updateTicket(Ticket ticket) {
-    // TODO: implement updateTicket
+  Future<bool> updateTicket(Ticket ticket) async {
+    final result =
+        await databaseHelper.updateRecordInTable(ticket.toMap(), _ticketTable);
+    if (result == 0) {
+      return false;
+    }
+    return true;
   }
 }

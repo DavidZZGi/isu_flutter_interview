@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isu_flutter_interview/data/models/user.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_up_bloc/bloc/sign_up_bloc.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../widgets/flutter_icon.dart';
 
@@ -23,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         automaticallyImplyLeading: false,
         title: const Text('Sign Up'),
       ),
@@ -30,13 +34,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: BlocListener<SignUpBloc, SignUpState>(
         listener: (context, state) {
           if (state.signUpStatus == SignUpStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account created sucessfully'),
-              ),
+            toastification.show(
+              context: context,
+              type: ToastificationType.success,
+              style: ToastificationStyle.flat,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: const Text('Created account'),
+              description: RichText(
+                  text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      text: 'Your account have been created successfully')),
+              alignment: Alignment.topRight,
+              direction: TextDirection.ltr,
+              animationDuration: const Duration(milliseconds: 300),
+              animationBuilder: (context, animation, alignment, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
             );
-            Future.delayed(const Duration(seconds: 1),
-                () => Navigator.pushReplacementNamed(context, '/'));
+
+            Future.delayed(const Duration(seconds: 3), () => context.go('/'));
           }
         },
         child: SingleChildScrollView(
@@ -51,11 +70,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
+                      labelText: 'Email or Username',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: _passwordController,
                     obscureText: _showPassword,
@@ -73,7 +93,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           });
                         },
                       ),
-                      border: const OutlineInputBorder(),
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -82,7 +103,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: _repeatShowPassword,
                     decoration: InputDecoration(
                       labelText: 'Repeat Password',
-                      border: const OutlineInputBorder(),
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _repeatShowPassword
@@ -97,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 15),
                   FilledButton(
                     child: const Text('Sign up'),
                     onPressed: () {
@@ -114,8 +136,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
 
                       if (email.isNotEmpty && password.isNotEmpty) {
-                        //   context.read<SignUpBloc>().add(OnSignUp(
-                        //     params: Params(email: email, password: password)));
+                        context.read<SignUpBloc>().add(OnSignUp(
+                            user: User(username: email, password: password)));
                       }
                     },
                   ),
@@ -124,8 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 5),
                   TextButton(
                       child: const Text('Sign In'),
-                      onPressed: () =>
-                          Navigator.pushReplacementNamed(context, '/'))
+                      onPressed: () => context.go('/'))
                 ],
               ),
             ),

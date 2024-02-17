@@ -10,7 +10,8 @@ class UserRepository implements IUserServices {
   @override
   Future<bool> checkUserAccount(String username) async {
     final users = await databaseHelper.getDataFromTable(userTable);
-    return users.any((user) => user['username'] == username);
+    return users.any((user) => user['username'] == username) ||
+        users.isNotEmpty;
   }
 
   @override

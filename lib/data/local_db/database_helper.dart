@@ -2,18 +2,26 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-  late Database _database;
+  late Database _db;
 
+  // Private constructor to make sure that there is only one DatabaseHelper instance
+  DatabaseHelper._privateConstructor();
+
+  // Only DatabaseHelper instance
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+  // Method to get the database
   Future<Database> get database async {
-    // ignore: unnecessary_null_comparison
-    if (_database != null) return _database;
-    _database = await initDatabase();
-    return _database;
+    if (_db.isOpen) {
+      return _db;
+    }
+    await initDatabase();
+    return _db;
   }
 
-  Future<Database> initDatabase() async {
+  Future<void> initDatabase() async {
     String path = join(await getDatabasesPath(), 'test.db');
-    return await openDatabase(
+    _db = await openDatabase(
       path,
       version: 1,
       onCreate: _createDatabase,

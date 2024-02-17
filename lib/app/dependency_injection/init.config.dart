@@ -12,8 +12,7 @@ import 'package:isu_flutter_interview/presentation/state_management/login_state_
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_up_bloc/bloc/sign_up_bloc.dart';
 
 FutureOr<void> initCore(GetIt sl) async {
-  await DatabaseHelper().initDatabase();
-  final sqliteInstance = DatabaseHelper();
+  final sqliteInstance = DatabaseHelper.instance;
   sl
     ..registerLazySingleton<IUserServices>(
       () => UserRepository(sqliteInstance),

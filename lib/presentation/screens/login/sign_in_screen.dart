@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isu_flutter_interview/data/models/user.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_in_bloc/bloc/sign_in_bloc.dart';
 import 'package:toastification/toastification.dart';
 
@@ -36,8 +38,8 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         automaticallyImplyLeading: false,
         title: const Center(child: Text("Welcome")),
       ),
@@ -67,7 +69,7 @@ class _SignInScreenState extends State<SignInScreen> {
             _passwordController.clear();
           }
           if (state.signInStatus == SignInStatus.success) {
-            Future.delayed(const Duration(seconds: 3), () {
+            Future.delayed(const Duration(seconds: 2), () {
               toastification.show(
                 context: context,
                 type: ToastificationType.success,
@@ -89,7 +91,7 @@ class _SignInScreenState extends State<SignInScreen> {
               );
             });
 
-            //    Navigator.pushReplacementNamed(context, '/home');
+            context.go('/dashboard');
           }
           if (state.signInStatus == SignInStatus.newUserError) {
             toastification.show(
@@ -100,6 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
               title: const Text('You are not registered'),
               description: RichText(
                   text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
                       text: 'Please sign up if you do not have an account')),
               alignment: Alignment.topRight,
               direction: TextDirection.ltr,
@@ -166,10 +169,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: _isButtonDisabled
                         ? null
                         : () {
-                            /*   context.read<SignInBloc>().add(OnSignIn(
-                          params: Params(
-                              email: _emailController.text,
-                              password: _passwordController.text)));*/
+                            context.read<SignInBloc>().add(OnSignIn(
+                                user: User(
+                                    username: _emailController.text,
+                                    password: _passwordController.text)));
                           },
                     child: const Text(
                       'Login',
@@ -191,7 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       style: const TextStyle(color: Colors.blue, fontSize: 18),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          //   Navigator.pushReplacementNamed(context, '/signup');
+                          context.go('/signup');
                         },
                     ),
                   ],

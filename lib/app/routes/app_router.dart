@@ -30,7 +30,7 @@ class AppRouter {
       GoRoute(
         name: 'getdirections',
         path: '/getdirections',
-        builder: (context, state) => const GetDirectionScreen(),
+        builder: (context, state) => GetDirectionScreen(),
       ),
     ],
   );
