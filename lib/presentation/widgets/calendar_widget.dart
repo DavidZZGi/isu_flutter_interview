@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:isu_flutter_interview/data/models/ticket.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  final List<Ticket> tickets;
+  const CalendarScreen({super.key, required this.tickets});
 
   @override
-  _CalendarScreenState createState() => _CalendarScreenState();
+  CalendarScreenState createState() => CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class CalendarScreenState extends State<CalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -48,6 +50,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     _focusedDay = focusedDay;
                   });
                 },
+                calendarBuilders: CalendarBuilders(
+                  // Personaliza la apariencia de los días vencidos
+                  outsideBuilder: (context, date, _) {
+                    bool isExpired = widget.tickets
+                        .any((ticket) => isSameDay(ticket.ticketDate, date));
+                    if (isExpired) {
+                      return Center(
+                        child: Text(
+                          date.day.toString(),
+                          style: const TextStyle(
+                              color:
+                                  Colors.red), // Color rojo para días vencidos
+                        ),
+                      );
+                    }
+                    return null;
+                  },
+                ),
               ),
             ],
           ),

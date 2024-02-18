@@ -11,6 +11,7 @@ class Ticket {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'clientName': clientName,
       'address': address,
       'ticketDate': ticketDate

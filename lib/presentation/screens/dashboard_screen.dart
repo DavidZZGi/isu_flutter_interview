@@ -158,18 +158,27 @@ class DashboardScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Calendar"),
-          content:
-              const CalendarScreen(), // Include the CalendarScreen widget as the content of the dialog
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
+        return BlocBuilder<TicketBloc, TicketState>(
+          builder: (context, state) {
+            if (state is LoadTicketState) {
+              return AlertDialog(
+                title: const Text("Calendar"),
+                content: CalendarScreen(
+                    tickets: state
+                        .tickets), // Include the CalendarScreen widget as the content of the dialog
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Close"),
+                  ),
+                ],
+              );
+            } else {
+              return const SizedBox();
+            }
+          },
         );
       },
     );
