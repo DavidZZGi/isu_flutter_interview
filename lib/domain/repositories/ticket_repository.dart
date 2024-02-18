@@ -31,15 +31,7 @@ class TicketRepository implements ITicketService {
   Future<List<Ticket>> getTickets() async {
     final result = await databaseHelper.getDataFromTable(_ticketTable);
 
-    return [
-      for (final {
-            'clientName': clientName,
-            'address': address,
-            'ticketDate': ticketDate,
-          } in result)
-        Ticket(
-            clientName: clientName, address: address, ticketDate: ticketDate),
-    ];
+    return [for (final element in result) Ticket.fromMap(element)];
   }
 
   @override

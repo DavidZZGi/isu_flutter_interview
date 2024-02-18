@@ -35,6 +35,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         listener: (context, state) {
           if (state.signUpStatus == SignUpStatus.success) {
             toastification.show(
+              closeOnClick: true,
+              dragToClose: true,
+              showProgressBar: false,
               context: context,
               type: ToastificationType.success,
               style: ToastificationStyle.flat,
@@ -46,13 +49,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       text: 'Your account have been created successfully')),
               alignment: Alignment.topRight,
               direction: TextDirection.ltr,
-              animationDuration: const Duration(milliseconds: 300),
-              animationBuilder: (context, animation, alignment, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
             );
 
             Future.delayed(const Duration(seconds: 3), () => context.go('/'));

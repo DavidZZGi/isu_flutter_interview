@@ -34,7 +34,7 @@ class DatabaseHelper {
       'CREATE TABLE user(username TEXT, password TEXT)',
     );
     await db.execute(
-      'CREATE TABLE ticket(clientName TEXT, address TEXT, ticketDate TEXT)',
+      'CREATE TABLE ticket(id INTEGER PRIMARY KEY, clientName TEXT, address TEXT, ticketDate TEXT)',
     );
   }
 

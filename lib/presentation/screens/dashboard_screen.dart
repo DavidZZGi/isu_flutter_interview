@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isu_flutter_interview/data/models/ticket.dart';
+import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
+import 'package:isu_flutter_interview/presentation/widgets/card_widget.dart';
 import 'package:isu_flutter_interview/presentation/widgets/ticket_form.dart';
-
+import 'package:intl/intl.dart';
 import '../widgets/calendar_widget.dart';
+import '../widgets/update_ticket_form.dart';
 
 class DashboardScreen extends StatelessWidget {
-  // Dummy data for the list of tickets
-  final List<Ticket> tickets = [
-    Ticket(
-        clientName: 'Client A',
-        address: 'Address A',
-        ticketDate: DateTime.now()),
-    Ticket(
-        clientName: 'Client B',
-        address: 'Address B',
-        ticketDate: DateTime.now()),
-    // Add more tickets as needed
-  ];
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +51,12 @@ class DashboardScreen extends StatelessWidget {
             PopupMenuButton(
               itemBuilder: (context) => [
                 const PopupMenuItem(
-                  child: Text('Work Ticket'),
                   value: 'work_ticket',
+                  child: Text('Work Ticket'),
                 ),
                 const PopupMenuItem(
-                  child: Text('Get Directions'),
                   value: 'get_directions',
+                  child: Text('Get Directions'),
                 ),
               ],
               onSelected: (value) {
@@ -76,29 +68,88 @@ class DashboardScreen extends StatelessWidget {
               },
             ),
           ]),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // List of tickets
-          Expanded(
-            child: ListView.builder(
-              itemCount: tickets.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(tickets[index].clientName),
-                  subtitle: Text(tickets[index].address),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      context.go('/workticket');
-                    },
-                    child: const Text('View Ticket'),
+      body: BlocBuilder<TicketBloc, TicketState>(
+        builder: (context, state) {
+          if (state is InitialTicketState) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is LoadTicketState) {
+            if (state.tickets.isNotEmpty) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // List of tickets
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.tickets.length,
+                      itemBuilder: (context, index) {
+                        return CardBody(
+                          child: ListTile(
+                            title: Text(state.tickets[index].clientName),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(state.tickets[index].address),
+                                Text(DateFormat('dd-MM-yyyy')
+                                    .format(state.tickets[index].ticketDate)),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        context.read<TicketBloc>().add(
+                                            OnTicketDelete(
+                                                id: state.tickets[index].id!));
+                                        context
+                                            .read<TicketBloc>()
+                                            .add(OnLoadTickets());
+                                      },
+                                      icon: const Icon(Icons.delete)),
+                                ),
+                                Flexible(
+                                  child: IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return UpdateTicketFormDialog(
+                                                ticket: state.tickets[index],
+                                              );
+                                            });
+                                      },
+                                      icon: const Icon(Icons.update)),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    context.go('/workticket');
+                                  },
+                                  child: const Text('View Ticket'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-          // New ticket button
-        ],
+                ],
+              );
+            } else {
+              return const Center(
+                child: Text('No data available'),
+              );
+            }
+          } else if (state is ErrorTicketState) {
+            return Center(
+              child: Text(state.errorMessage),
+            );
+          }
+          return const SizedBox();
+        },
       ),
     );
   }
@@ -108,15 +159,15 @@ class DashboardScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Calendar"),
+          title: const Text("Calendar"),
           content:
-              CalendarScreen(), // Include the CalendarScreen widget as the content of the dialog
+              const CalendarScreen(), // Include the CalendarScreen widget as the content of the dialog
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("Close"),
+              child: const Text("Close"),
             ),
           ],
         );

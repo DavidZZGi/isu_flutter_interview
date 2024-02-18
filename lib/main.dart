@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isu_flutter_interview/app/routes/app_router.dart';
-import 'package:isu_flutter_interview/data/local_db/database_helper.dart';
-import 'package:isu_flutter_interview/domain/modules/login_module/user_sign_in.dart';
-import 'package:isu_flutter_interview/domain/modules/login_module/user_sign_up.dart';
-import 'package:isu_flutter_interview/domain/repositories/user_repository.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_in_bloc/bloc/sign_in_bloc.dart';
-
+import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
+import 'app/dependency_injection/init.config.dart';
 import 'presentation/state_management/login_state_managament/sign_up_bloc/bloc/sign_up_bloc.dart';
 
+GetIt sl = GetIt.I;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initCore(sl);
   runApp(const MyApp());
 }
 
@@ -23,7 +24,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    DatabaseHelper.instance.initDatabase();
     super.initState();
   }
 
@@ -32,14 +32,13 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SignInBloc(
-              userSignIn: UserSignIn(
-                  userRepository: UserRepository(DatabaseHelper.instance))),
+          create: (context) => sl<SignInBloc>(),
         ),
         BlocProvider(
-          create: (context) => SignUpBloc(
-              userSignUp: UserSignUp(
-                  userRepository: UserRepository(DatabaseHelper.instance))),
+          create: (context) => sl<SignUpBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<TicketBloc>(),
         ),
       ],
       child: MaterialApp.router(

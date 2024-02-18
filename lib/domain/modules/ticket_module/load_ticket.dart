@@ -6,7 +6,7 @@ import '../../repositories/ticket_repository.dart';
 
 class LoadTickets implements UseCase<Future<List<Ticket>>, NoParams> {
   final TicketRepository ticketRepository;
-  LoadTickets(this.ticketRepository);
+  LoadTickets({required this.ticketRepository});
   @override
   Future<List<Ticket>> call(NoParams noParams) async =>
       await ticketRepository.getTickets();

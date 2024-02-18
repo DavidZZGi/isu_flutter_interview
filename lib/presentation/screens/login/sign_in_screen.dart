@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isu_flutter_interview/data/models/user.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_in_bloc/bloc/sign_in_bloc.dart';
+import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../widgets/flutter_icon.dart';
@@ -47,6 +48,9 @@ class _SignInScreenState extends State<SignInScreen> {
         listener: (context, state) {
           if (state.signInStatus == SignInStatus.error) {
             toastification.show(
+              closeOnClick: true,
+              dragToClose: true,
+              showProgressBar: false,
               context: context,
               type: ToastificationType.error,
               style: ToastificationStyle.flat,
@@ -57,13 +61,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       text: 'Your username or password are wrong')),
               alignment: Alignment.topRight,
               direction: TextDirection.ltr,
-              animationDuration: const Duration(milliseconds: 300),
-              animationBuilder: (context, animation, alignment, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
             );
             _emailController.clear();
             _passwordController.clear();
@@ -71,6 +68,9 @@ class _SignInScreenState extends State<SignInScreen> {
           if (state.signInStatus == SignInStatus.success) {
             Future.delayed(const Duration(seconds: 2), () {
               toastification.show(
+                closeOnClick: true,
+                dragToClose: true,
+                showProgressBar: false,
                 context: context,
                 type: ToastificationType.success,
                 style: ToastificationStyle.flat,
@@ -81,13 +81,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         text: 'Your username and password are correct')),
                 alignment: Alignment.topRight,
                 direction: TextDirection.ltr,
-                animationDuration: const Duration(milliseconds: 300),
-                animationBuilder: (context, animation, alignment, child) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
               );
             });
 
@@ -95,6 +88,9 @@ class _SignInScreenState extends State<SignInScreen> {
           }
           if (state.signInStatus == SignInStatus.newUserError) {
             toastification.show(
+              closeOnClick: true,
+              dragToClose: true,
+              showProgressBar: false,
               context: context,
               type: ToastificationType.error,
               style: ToastificationStyle.flat,
@@ -106,13 +102,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       text: 'Please sign up if you do not have an account')),
               alignment: Alignment.topRight,
               direction: TextDirection.ltr,
-              animationDuration: const Duration(milliseconds: 300),
-              animationBuilder: (context, animation, alignment, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
             );
             _emailController.clear();
             _passwordController.clear();
@@ -173,6 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 user: User(
                                     username: _emailController.text,
                                     password: _passwordController.text)));
+                            context.read<TicketBloc>().add(OnLoadTickets());
                           },
                     child: const Text(
                       'Login',

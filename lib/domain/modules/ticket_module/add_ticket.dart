@@ -5,7 +5,7 @@ import '../../repositories/ticket_repository.dart';
 
 class AddTicket implements UseCase<Future<bool>, Ticket> {
   final TicketRepository ticketRepository;
-  AddTicket(this.ticketRepository);
+  AddTicket({required this.ticketRepository});
 
   @override
   Future<bool> call(Ticket params) async =>

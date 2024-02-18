@@ -4,7 +4,7 @@ import '../../repositories/ticket_repository.dart';
 
 class DeleteTicket implements UseCase<Future<bool>, int> {
   final TicketRepository ticketRepository;
-  DeleteTicket(this.ticketRepository);
+  DeleteTicket({required this.ticketRepository});
   @override
   Future<bool> call(int params) async =>
       await ticketRepository.deleteTicket(params);

@@ -18,7 +18,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   final LoadTickets loadTickets;
   final DeleteTicket deleteTicket;
   TicketBloc(
-      this.addTicket, this.deleteTicket, this.loadTickets, this.updateTicket)
+      {required this.addTicket,
+      required this.deleteTicket,
+      required this.loadTickets,
+      required this.updateTicket})
       : super(InitialTicketState()) {
     on<OnLoadTickets>(_onLoadTickets);
     on<OnTicketCreate>(_onTicketCreate);
@@ -29,6 +32,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   Future<void> _onLoadTickets(
       OnLoadTickets event, Emitter<TicketState> emit) async {
     try {
+      emit(InitialTicketState());
       final result = await loadTickets.call(NoParams());
       emit(LoadTicketState(result));
     } catch (e) {
@@ -40,6 +44,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       OnTicketCreate event, Emitter<TicketState> emit) async {
     try {
       final result = await addTicket.call(event.ticket);
+
       if (result) {
         emit(CreateTicketState());
       } else {

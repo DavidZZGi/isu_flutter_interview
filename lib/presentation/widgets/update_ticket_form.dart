@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isu_flutter_interview/data/models/ticket.dart';
-import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
+import 'package:intl/intl.dart';
 
-class TicketFormDialog extends StatefulWidget {
-  const TicketFormDialog({Key? key}) : super(key: key);
+import '../../data/models/ticket.dart';
+import '../state_management/ticket_bloc/bloc/ticket_bloc.dart';
+
+class UpdateTicketFormDialog extends StatefulWidget {
+  final Ticket ticket; // Ticket que se va a actualizar
+
+  const UpdateTicketFormDialog({Key? key, required this.ticket})
+      : super(key: key);
 
   @override
-  TicketFormDialogState createState() => TicketFormDialogState();
+  UpdateTicketFormDialogState createState() => UpdateTicketFormDialogState();
 }
 
-class TicketFormDialogState extends State<TicketFormDialog> {
-  final TextEditingController _clientNameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  late DateTime _selectedDate; // Variable para almacenar la fecha seleccionada
+class UpdateTicketFormDialogState extends State<UpdateTicketFormDialog> {
+  late TextEditingController _clientNameController;
+  late TextEditingController _addressController;
+  late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime.now(); // Inicializar con la fecha actual
+    _clientNameController =
+        TextEditingController(text: widget.ticket.clientName);
+    _addressController = TextEditingController(text: widget.ticket.address);
+    _selectedDate = widget.ticket.ticketDate;
   }
 
   @override
@@ -29,10 +37,9 @@ class TicketFormDialogState extends State<TicketFormDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              'Create Ticket',
+              'Update Ticket',
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
@@ -60,17 +67,16 @@ class TicketFormDialogState extends State<TicketFormDialog> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                context.read<TicketBloc>().add(OnTicketCreate(
+                context.read<TicketBloc>().add(OnTicketUpdate(
                     ticket: Ticket(
+                        id: widget.ticket.id,
                         clientName: _clientNameController.text,
                         address: _addressController.text,
                         ticketDate: _selectedDate)));
-                //load the ticket again after insertion
-                //can be improved for not making unneccessary requests
                 context.read<TicketBloc>().add(OnLoadTickets());
                 Navigator.of(context).pop();
               },
-              child: const Text('Create'),
+              child: const Text('Update'),
             ),
           ],
         ),
@@ -78,7 +84,6 @@ class TicketFormDialogState extends State<TicketFormDialog> {
     );
   }
 
-  // Función para seleccionar la fecha a través de un calendario
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -88,13 +93,12 @@ class TicketFormDialogState extends State<TicketFormDialog> {
     );
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
-        _selectedDate = pickedDate; // Actualizar la fecha seleccionada
+        _selectedDate = pickedDate;
       });
     }
   }
 
-  // Función para formatear la fecha en un formato legible
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    return DateFormat('dd-MM-yyyy').format(date);
   }
 }
