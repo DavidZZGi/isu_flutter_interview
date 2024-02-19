@@ -14,8 +14,7 @@ class Ticket {
       'id': id,
       'clientName': clientName,
       'address': address,
-      'ticketDate': ticketDate
-          .toIso8601String(), // Convertir la fecha a un formato de cadena ISO 8601
+      'ticketDate': ticketDate.toIso8601String(),
     };
   }
 

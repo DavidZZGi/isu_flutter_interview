@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:isu_flutter_interview/data/models/ticket.dart';
+import 'package:path/path.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -18,8 +19,8 @@ class CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.8,
-      height: MediaQuery.sizeOf(context).height * 0.5,
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Calendar'),
@@ -52,16 +53,21 @@ class CalendarScreenState extends State<CalendarScreen> {
                 },
                 calendarBuilders: CalendarBuilders(
                   // Personaliza la apariencia de los días vencidos
-                  outsideBuilder: (context, date, _) {
+                  markerBuilder: (context, date, events) {
                     bool isExpired = widget.tickets
                         .any((ticket) => isSameDay(ticket.ticketDate, date));
                     if (isExpired) {
-                      return Center(
+                      return Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
                         child: Text(
-                          date.day.toString(),
-                          style: const TextStyle(
-                              color:
-                                  Colors.red), // Color rojo para días vencidos
+                          '${date.day}',
+                          style: const TextStyle(color: Colors.white),
                         ),
                       );
                     }

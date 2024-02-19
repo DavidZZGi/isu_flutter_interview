@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:googleapis/calendar/v3.dart' as cal;
+import 'package:isu_flutter_interview/presentation/state_management/calendar_bloc/calendar_bloc.dart';
 import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
 import 'package:isu_flutter_interview/presentation/widgets/card_widget.dart';
 import 'package:isu_flutter_interview/presentation/widgets/ticket_form.dart';
@@ -22,17 +24,32 @@ class DashboardScreen extends StatelessWidget {
                   icon: const Icon(Icons.calendar_today),
                   onPressed: () {
                     _showCalendarDialog(context);
-                    // Open calendar screen
+                    // Open calendar dialog
                   },
                 ),
               ),
-              Flexible(
-                child: IconButton(
-                  icon: const Icon(Icons.sync),
-                  onPressed: () {
-                    // Sync calendar with Google Calendar
-                  },
-                ),
+              BlocBuilder<TicketBloc, TicketState>(
+                builder: (context, state) {
+                  if (state is LoadTicketState) {
+                    return Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 2.0),
+                        child: IconButton(
+                          icon: const Icon(Icons.sync),
+                          onPressed: () {
+                            context.read<CalendarBloc>().add(OnSyncCalendar(
+                                event: cal.Event(
+                                    summary: state.tickets.first.clientName,
+                                    start: cal.EventDateTime(
+                                        date:
+                                            state.tickets.first.ticketDate))));
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
               )
             ],
           ),
@@ -48,22 +65,25 @@ class DashboardScreen extends StatelessWidget {
               },
               label: const Text('New Ticket'),
             ),
-            PopupMenuButton(
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'work_ticket',
-                  child: Text('Work Ticket'),
-                ),
-                const PopupMenuItem(
-                  value: 'get_directions',
-                  child: Text('Get Directions'),
-                ),
-              ],
-              onSelected: (value) {
-                if (value == 'work_ticket') {
-                  // Navigate to work ticket screen
-                } else if (value == 'get_directions') {
-                  // Navigate to get directions screen
+            BlocBuilder<TicketBloc, TicketState>(
+              builder: (context, state) {
+                if (state is LoadTicketState) {
+                  return PopupMenuButton(
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'work_ticket',
+                        child: const Text('Work Ticket'),
+                        onTap: () => context.go('/workticket',
+                            extra: state.tickets.last),
+                      ),
+                      const PopupMenuItem(
+                        value: 'get_directions',
+                        child: Text('Get Directions'),
+                      ),
+                    ],
+                  );
+                } else {
+                  return const SizedBox();
                 }
               },
             ),
@@ -125,7 +145,8 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    context.go('/workticket');
+                                    context.go('/workticket',
+                                        extra: state.tickets[index]);
                                   },
                                   child: const Text('View Ticket'),
                                 ),
@@ -163,9 +184,7 @@ class DashboardScreen extends StatelessWidget {
             if (state is LoadTicketState) {
               return AlertDialog(
                 title: const Text("Calendar"),
-                content: CalendarScreen(
-                    tickets: state
-                        .tickets), // Include the CalendarScreen widget as the content of the dialog
+                content: CalendarScreen(tickets: state.tickets),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {

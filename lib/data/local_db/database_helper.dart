@@ -4,13 +4,13 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   late Database _db;
 
-  // Private constructor to make sure that there is only one DatabaseHelper instance
+  /// Private constructor to make sure that there is only one DatabaseHelper instance
   DatabaseHelper._privateConstructor();
 
-  // Only DatabaseHelper instance
+  /// Only one DatabaseHelper instance
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  // Method to get the database
+  /// Method to get the database
   Future<Database> get database async {
     if (_db.isOpen) {
       return _db;
@@ -38,7 +38,7 @@ class DatabaseHelper {
     );
   }
 
-  //Dynamic CRUD operations for Tables
+  ///Dynamic CRUD operations for Tables
   Future<int> insertRecord(
       Map<String, dynamic> record, String tableName) async {
     Database db = await database;

@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:isu_flutter_interview/presentation/screens/screens.dart';
 
+import '../../data/models/ticket.dart';
+
 // GoRouter configuration
 class AppRouter {
 // ignore: unused_field
@@ -20,17 +22,20 @@ class AppRouter {
       GoRoute(
         name: 'dashboard',
         path: '/dashboard',
-        builder: (context, state) => DashboardScreen(),
+        builder: (context, state) => const DashboardScreen(),
       ),
       GoRoute(
-        name: 'workticket',
-        path: '/workticket',
-        builder: (context, state) => const WorkTicketScreen(),
-      ),
+          name: 'workticket',
+          path: '/workticket',
+          builder: (context, state) {
+            final ticket = state.extra as Ticket;
+            return WorkTicketScreen(ticket: ticket);
+          }),
       GoRoute(
         name: 'getdirections',
         path: '/getdirections',
-        builder: (context, state) => GetDirectionScreen(),
+        builder: (context, state) =>
+            GetDirectionScreen(address: state.extra.toString()),
       ),
     ],
   );

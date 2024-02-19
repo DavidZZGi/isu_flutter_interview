@@ -1,79 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GetDirectionScreen extends StatefulWidget {
+  final String? address;
   const GetDirectionScreen({
+    this.address,
     Key? key,
   }) : super(key: key);
 
   @override
-  _GetDirectionScreenState createState() => _GetDirectionScreenState();
+  GetDirectionScreenState createState() => GetDirectionScreenState();
 }
 
-class _GetDirectionScreenState extends State<GetDirectionScreen> {
-  late GoogleMapController _controller;
-  late TextEditingController _addressController;
-  final String initialAddress = '11 entre e y f';
-  //final ValueChanged<String> onAddressChanged=(){};
+class GetDirectionScreenState extends State<GetDirectionScreen> {
+  late GoogleMapController mapController;
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+  final TextEditingController _addressController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    //  _addressController = TextEditingController(text: widget.initialAddress);
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     _addressController.dispose();
     super.dispose();
   }
 
   @override
+  void initState() {
+    super.initState();
+    _addressController.text = widget.address!;
+  }
+
+//I could not be able to get an api key for google map integration
+//but basically giving address param to google map endpoint
+// and the GoogleMap widget for drawing the ui, is good to go
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: LatLng(
-                  0, 0), // Initial position (change it according to your needs)
-              zoom: 15, // Initial zoom level
-            ),
-            onMapCreated: (controller) {
-              setState(() {
-                _controller = controller;
-              });
-            },
-            onCameraMove: (position) {
-              // Get the address from the current camera position
-              // (You might need to use a Geocoding API to get the address from the LatLng)
-              // For simplicity, we're just setting the latitude and longitude as the address
-              /* widget.onAddressChanged(
-                  '${position.target.latitude}, ${position.target.longitude}');*/
-            },
-          ),
-        ),
-        TextField(
-          controller: _addressController,
-          decoration: InputDecoration(
-            labelText: 'Address',
-            hintText: 'Enter address for directions',
-          ),
-          onChanged: (address) {
-            // Move the camera to the specified address when the user modifies it
-            // (You might need to use a Geocoding API to get the LatLng from the address)
-            // For simplicity, we're just parsing the address as LatLng
-            List<String> parts = address.split(',');
-            if (parts.length == 2) {
-              double latitude = double.tryParse(parts[0]) ?? 0;
-              double longitude = double.tryParse(parts[1]) ?? 0;
-              _controller.animateCamera(
-                  CameraUpdate.newLatLng(LatLng(latitude, longitude)));
-            }
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Get Directions'),
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/dashboard'); // go back to dashboard
           },
         ),
-      ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _addressController,
+              decoration: const InputDecoration(
+                labelText: 'Enter Address',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.grey[300],
+              child: const Center(
+                child: Text(
+                  'Map Placeholder',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

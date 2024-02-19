@@ -2,20 +2,22 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:isu_flutter_interview/data/local_db/database_helper.dart';
-import 'package:isu_flutter_interview/data/services/ticket_services.dart';
-import 'package:isu_flutter_interview/data/services/user_services.dart';
+import 'package:isu_flutter_interview/domain/modules/calendar_module/sync_calendar.dart';
 import 'package:isu_flutter_interview/domain/modules/login_module/user_sign_in.dart';
 import 'package:isu_flutter_interview/domain/modules/login_module/user_sign_up.dart';
 import 'package:isu_flutter_interview/domain/modules/ticket_module/add_ticket.dart';
 import 'package:isu_flutter_interview/domain/modules/ticket_module/delete_ticket.dart';
 import 'package:isu_flutter_interview/domain/modules/ticket_module/load_ticket.dart';
 import 'package:isu_flutter_interview/domain/modules/ticket_module/update_ticket.dart';
+import 'package:isu_flutter_interview/domain/repositories/calendar_repository.dart';
 import 'package:isu_flutter_interview/domain/repositories/ticket_repository.dart';
 import 'package:isu_flutter_interview/domain/repositories/user_repository.dart';
+import 'package:isu_flutter_interview/presentation/state_management/calendar_bloc/calendar_bloc.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_in_bloc/bloc/sign_in_bloc.dart';
 import 'package:isu_flutter_interview/presentation/state_management/login_state_managament/sign_up_bloc/bloc/sign_up_bloc.dart';
 import 'package:isu_flutter_interview/presentation/state_management/ticket_bloc/bloc/ticket_bloc.dart';
 
+///Dependency injection configuration
 FutureOr<void> initCore(GetIt sl) async {
   await DatabaseHelper.instance.initDatabase();
   final sqliteInstance = DatabaseHelper.instance;
@@ -26,6 +28,14 @@ FutureOr<void> initCore(GetIt sl) async {
     ..registerLazySingleton<TicketRepository>(
       () => TicketRepository(
         sqliteInstance,
+      ),
+    )
+    ..registerLazySingleton<CalendarRepository>(
+      () => CalendarRepository(),
+    )
+    ..registerLazySingleton<SyncGoogleCalendar>(
+      () => SyncGoogleCalendar(
+        calendarRepository: sl<CalendarRepository>(),
       ),
     )
     ..registerLazySingleton<UserSignIn>(
@@ -53,6 +63,9 @@ FutureOr<void> initCore(GetIt sl) async {
     )
     ..registerLazySingleton<SignUpBloc>(
       () => SignUpBloc(userSignUp: sl<UserSignUp>()),
+    )
+    ..registerLazySingleton<CalendarBloc>(
+      () => CalendarBloc(syncGoogleCalendar: sl<SyncGoogleCalendar>()),
     )
     ..registerLazySingleton<TicketBloc>(
       () => TicketBloc(
